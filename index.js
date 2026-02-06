@@ -23,15 +23,33 @@ async function run() {
     await client.connect();
     const database = client.db("crud-operation");
     const usersCollection = database.collection("users");
+    const parcelsCollection = database.collection("parcels");
 
     // Test Route
     app.get("/", (req, res) => {
       res.send("user server is running");
     });
 
+    app.get("/users", async (req, res) => {
+      const cursor = usersCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/parcels", async (req, res) => {
+      const cursor = parcelsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.post("/users", async (req, res) => {
       const users = req.body;
       const result = await usersCollection.insertOne(users);
+      res.send(result);
+    });
+
+    app.post("/parcels", async (req, res) => {
+      const parcels = req.body;
+      const result = await parcelsCollection.insertOne(parcels);
       res.send(result);
     });
 
