@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 const app = express();
 const port = 3000;
@@ -35,11 +35,6 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
-    app.get("/parcels", async (req, res) => {
-      const cursor = parcelsCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
-    });
 
     app.post("/users", async (req, res) => {
       const users = req.body;
@@ -47,9 +42,21 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/parcels", async (req, res) => {
-      const parcels = req.body;
-      const result = await parcelsCollection.insertOne(parcels);
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.put("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedUser = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: updatedUser,
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
 
@@ -66,6 +73,3 @@ run().catch(console.dir);
 app.listen(port, () => {
   console.log(`users server running at http://localhost:${port}`);
 });
-
-// shohagwebdev_db_user
-// tgqriI7gsmOQVWIw
